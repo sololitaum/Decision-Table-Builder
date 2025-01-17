@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Tool Decision Table Builder</title>
+    <!-- Internal styling in order to run the file easier  -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        select, input, button {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Decision Table Builder</h1>
+
+    <label for="tableTitle">Table Title:</label>
+    <input type="text" id="tableTitle" placeholder="Enter table title...">
+
+    <label for="numColumns">Number of Columns:</label>
+    <select id="numColumns">
+        <!-- Dropdown options added dynamically by JavaScript -->
+    </select>
+
+    <button id="createTable">Create Table</button>
+    <button id="addCondition">Add Condition</button>
+    <button id="addAction">Add Action</button>
+
+    <div class="table-container" id="tableContainer">
+        <!-- The table will appear here -->
+    </div>
+
+      <!-- buttibn to Help Page Link -->
+      <div class="help-link">
+        <button onclick="window.location.href='helppage.html'">Go to Help Page</button>
+    </div>
+
+    <script>
+        // Populate the dropdown for number of columns
+        const numColumnsDropdown = document.getElementById('numColumns');
+        for (let i = 1; i <= 10; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            numColumnsDropdown.appendChild(option);
+        }
+
+        const tableContainer = document.getElementById('tableContainer');
+        let numColumns = 0;
+        let tableTitle = '';
+        let tableCreated = false;
+
+        //Create the table when the "Create Table" button is clicked:
+        //code check if 
+        //A title for the table is provided, a number of columns i selected 
+        //if both are valid it created the table with those specifications
+        document.getElementById('createTable').addEventListener('click', () => {
+            tableTitle = document.getElementById('tableTitle').value;
+            numColumns = parseInt(document.getElementById('numColumns').value, 10);
+
+            if (!tableTitle || !numColumns) {
+                alert('Please enter a title and select the number of columns.');
+                return;
+            }
+
+            if (!tableCreated) {
+                createTable();
+                tableCreated = true;
+            }
+        });
+
+        //Functions to add rows for "Conditions" or "Actions":
+        //When "Add Condition" or "Add Action" is clicked, it:
+        //Checks if the table has been created.
+        //Prompts the user to enter a name for the condition/action
+        //Adds a row to the table, including dropdowns in each column for "Y" or "N" (Yes or No).
+        //
+        document.getElementById('addCondition').addEventListener('click', () => {
+            if (!tableCreated) {
+                alert('Please create the table first.');
+                return;
+            }
+            const conditionName = prompt('Enter condition name:');
+            if (conditionName) {
+                addRow('Condition', conditionName);
+            }
+        });
+
+        document.getElementById('addAction').addEventListener('click', () => {
+            if (!tableCreated) {
+                alert('Please create the table first.');
+                return;
+            }
+            const actionName = prompt('Enter action name:');
+            if (actionName) {
+                addRow('Action', actionName);
+            }
+        });
+
+        //Function to create the table:
+        //This function builds the table HTML with a header row that includes:
+        //A "Type/Name" column for the condition/action names.
+        //A set of columns labeled "Column 1," "Column 2," etc., based on the number of columns chosen by the user.
+        function createTable() {
+            let tableHTML = `<h2>${tableTitle}</h2>`;
+            tableHTML += `<table>
+                <thead>
+                    <tr>
+                        <th>Type/Name</th>
+                        ${Array.from({ length: numColumns }, (_, i) => `<th>Column ${i + 1}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>`;
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // Function to add rows to the table:
+        //This function adds a row for each new condition or action. Each row includes:
+        //A first column with the type (e.g., "Condition") and name (e.g., "Condition 1").
+        //Dropdown menus for every column with "Y" or "N" as options.
+        function addRow(type, name) {
+            const tableBody = document.getElementById('tableBody');
+            let rowHTML = `<tr><td>${type}: ${name}</td>`;
+            for (let i = 0; i < numColumns; i++) {
+                rowHTML += `<td><select>
+                                <option value="Y">Y</option>
+                                <option value="N">N</option>
+                            </select></td>`;
+            }
+            rowHTML += '</tr>';
+            tableBody.insertAdjacentHTML('beforeend', rowHTML);
+        }
+    </script>
+    <footer>
+        <h5>© University of Michigan-Dearborn CIS 375 Fall 2024 - Scrum Masters</h5>
+    </footer>
+
+</body>
+</html>
